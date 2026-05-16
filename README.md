@@ -1,4 +1,246 @@
-# streaming-01-foundations
+# Streaming 01 Foundations
+
+## Project Overview
+
+This project introduces the foundations of streaming analytics using Python. The main
+goal is to understand how data can move from a producer to a consumer one message at a
+time.
+
+In this first module, the project does not use Kafka yet. Instead, it uses a local CSV
+file to simulate a streaming topic. The producer reads fake sales data from a CSV
+file and writes messages one at a time to a simulated topic file. The consumer reads
+from that simulated topic file and writes the consumed records to an output CSV
+file.
+
+This helps demonstrate the basic structure of a streaming system before adding a
+message broker like Apache Kafka in later modules.
+
+## What This Project Demonstrates
+
+This project demonstrates several important streaming analytics concepts:
+
+- Streaming data as “data in motion”
+- Producer and consumer roles
+- Reading data from a CSV source
+- Writing messages one at a time
+- Simulating a topic with a local CSV file
+- Polling for new messages
+- Using environment variables from a `.env` file
+- Organizing Python code into reusable functions
+- Logging project paths, settings, and progress
+- Making technical modifications to track messages
+
+## Producer and Consumer
+
+### Producer
+
+The producer is responsible for creating or sending messages.
+
+In this project, the producer reads fake sales records from:
+
+```text
+data/sales.csv
+
+
+
+Producer_femi output
+
+2026-05-16 17:20:56 | DEBUG | P01 | KAFKA_BOOTSTRAP_SERVERS           = localhost:9092
+2026-05-16 17:20:56 | DEBUG | P01 | KAFKA_BROKER_ADDRESS_FAMILY       = v6
+2026-05-16 17:20:56 | DEBUG | P01 | KAFKA_TOPIC                       = streaming-01-foundations-case
+2026-05-16 17:20:56 | DEBUG | P01 | KAFKA_CLEAR_TOPIC_ON_START        = true
+2026-05-16 17:20:56 | DEBUG | P01 | PRODUCER_MESSAGE_COUNT            = 3
+2026-05-16 17:20:56 | DEBUG | P01 | PRODUCER_MESSAGE_INTERVAL_SECONDS = 2
+2026-05-16 17:20:56 | DEBUG | P01 | PRODUCER_MAX_MESSAGES             = 50
+2026-05-16 17:20:56 | DEBUG | P01 | PRODUCER_POLL_INTERVAL_SECONDS    = 15
+2026-05-16 17:20:56 | DEBUG | P01 | KAFKA_GROUP_ID                    = streaming-consumer-group-A
+2026-05-16 17:20:56 | DEBUG | P01 | KAFKA_AUTO_OFFSET_RESET           = earliest
+2026-05-16 17:20:56 | DEBUG | P01 | CONSUMER_TIMEOUT_SECONDS          = 10
+2026-05-16 17:20:56 | DEBUG | P01 | CONSUMER_MAX_MESSAGES             = 1000
+2026-05-16 17:20:56 | INFO | P01 | === RUN START ===
+2026-05-16 17:20:56 | INFO | P01 | project=P01
+2026-05-16 17:20:56 | INFO | P01 | repo_dir=streaming-01-foundations
+2026-05-16 17:20:56 | INFO | P01 | python=3.14.2
+2026-05-16 17:20:56 | INFO | P01 | os=Windows 11
+2026-05-16 17:20:56 | INFO | P01 | shell=powershell
+2026-05-16 17:20:56 | INFO | P01 | cwd=.
+2026-05-16 17:20:56 | INFO | P01 | github_actions=False
+2026-05-16 17:20:56 | INFO | P01 | ========================
+2026-05-16 17:20:56 | INFO | P01 | START producer main()
+2026-05-16 17:20:56 | INFO | P01 | ========================
+2026-05-16 17:20:56 | INFO | P01 | ROOT_DIR = .
+2026-05-16 17:20:56 | INFO | P01 | DATA_DIR = data
+2026-05-16 17:20:56 | INFO | P01 | SALES_CSV = data\sales.csv
+2026-05-16 17:20:56 | INFO | P01 | TOPIC_CSV = data\output\streaming-01-foundations-femi.csv
+2026-05-16 17:20:56 | INFO | P01 | ========================
+2026-05-16 17:20:56 | INFO | P01 | SECTION A. Acquire
+2026-05-16 17:20:56 | INFO | P01 | ========================
+2026-05-16 17:20:56 | INFO | P01 | Loading settings from .env...
+2026-05-16 17:20:56 | INFO | P01 | KAFKA_TOPIC                       = streaming-01-foundations-case
+2026-05-16 17:20:56 | INFO | P01 | KAFKA_CLEAR_TOPIC_ON_START        = True
+2026-05-16 17:20:56 | INFO | P01 | PRODUCER_MESSAGE_COUNT            = 3
+2026-05-16 17:20:56 | INFO | P01 | PRODUCER_MESSAGE_INTERVAL_SECONDS = 2.0
+2026-05-16 17:20:56 | INFO | P01 | Verifying local source data...
+2026-05-16 17:20:56 | INFO | P01 | Source file found: sales.csv
+2026-05-16 17:20:56 | INFO | P01 | Preparing local simulated topic file...
+2026-05-16 17:20:56 | INFO | P01 | Topic file will be created: streaming-01-foundations-femi.csv
+2026-05-16 17:20:56 | INFO | P01 | ========================
+2026-05-16 17:20:56 | INFO | P01 | SECTION P. Produce Messages
+2026-05-16 17:20:56 | INFO | P01 | ========================
+2026-05-16 17:20:56 | INFO | P01 | Sending messages...
+2026-05-16 17:20:56 | INFO | P01 | Sending up to 3 local message(s).
+2026-05-16 17:20:56 | INFO | P01 | Writing to simulated topic file: streaming-01-foundations-femi.csv
+2026-05-16 17:20:56 | INFO | P01 | Watch each sale arrive. Press CTRL+C to stop early.
+
+2026-05-16 17:20:56 | INFO | P01 | {
+  order_id: e7324981-a9f0-419f-b708-d0a333451fff
+  datetime: 2026-05-04T08:11:00Z
+  region_id: US-TX
+  currency_code: USD
+  product_id: PY-STREAM-005
+  unit_price: 59.99
+  quantity: 3
+  is_online: true
+  customer_id: CUST-4150
+  is_new_customer: false
+  device_type: tablet
+  payment_method: paypal
+  referral_source: paid_search
+  discount_code:
+  customer_note: Gift for my team
+}
+2026-05-16 17:20:56 | INFO | P01 |   Sending local message with key=US-TX
+2026-05-16 17:20:56 | INFO | P01 |   MESSAGE SENT  sent=1
+2026-05-16 17:20:56 | INFO | P01 |   message_id=sale-1
+2026-05-16 17:20:58 | INFO | P01 | {
+  order_id: d61943e0-f543-4b5f-9c9a-18605ea4cfe5
+  datetime: 2026-05-04T08:23:00Z
+  region_id: US-TX
+  currency_code: USD
+  product_id: PY-DATA-002
+  unit_price: 49.99
+  quantity: 1
+  is_online: true
+  customer_id: CUST-1106
+  is_new_customer: false
+  device_type: mobile
+  payment_method: paypal
+  referral_source: paid_search
+  discount_code:
+  customer_note: Gift for my team
+}
+2026-05-16 17:20:58 | INFO | P01 |   Sending local message with key=US-TX
+2026-05-16 17:20:58 | INFO | P01 |   MESSAGE SENT  sent=2
+2026-05-16 17:20:58 | INFO | P01 |   message_id=sale-2
+2026-05-16 17:21:00 | INFO | P01 | {
+  order_id: 14da1915-8e74-47be-9e10-f7275d31af46
+  datetime: 2026-05-04T08:28:00Z
+  region_id: CA-QC
+  currency_code: CAD
+  product_id: PY-NLP-006
+  unit_price: 54.99
+  quantity: 1
+  is_online: true
+  customer_id: CUST-2133
+  is_new_customer: false
+  device_type: desktop
+  payment_method: paypal
+  referral_source: organic
+  discount_code:
+  customer_note: Learning at my own pace
+}
+2026-05-16 17:21:00 | INFO | P01 |   Sending local message with key=CA-QC
+2026-05-16 17:21:00 | INFO | P01 |   MESSAGE SENT  sent=3
+2026-05-16 17:21:00 | INFO | P01 |   message_id=sale-3
+2026-05-16 17:21:02 | INFO | P01 | ========================
+2026-05-16 17:21:02 | INFO | P01 | SECTION E. Exit
+2026-05-16 17:21:02 | INFO | P01 | ========================
+2026-05-16 17:21:02 | INFO | P01 | Summary:
+2026-05-16 17:21:02 | INFO | P01 | Sent 3 message(s).
+2026-05-16 17:21:02 | INFO | P01 | WROTE TOPIC_CSV = data\output\streaming-01-foundations-femi.csv
+2026-05-16 17:21:02 | INFO | P01 | ========================
+2026-05-16 17:21:02 | INFO | P01 | Producer executed successfully!
+2026-05-16 17:21:02 | INFO | P01 | ========================
+
+Consumer_femi.py output
+
+2026-05-16 17:21:21 | DEBUG | C01 | KAFKA_BOOTSTRAP_SERVERS           = localhost:9092
+2026-05-16 17:21:21 | DEBUG | C01 | KAFKA_BROKER_ADDRESS_FAMILY       = v6
+2026-05-16 17:21:21 | DEBUG | C01 | KAFKA_TOPIC                       = streaming-01-foundations-case
+2026-05-16 17:21:21 | DEBUG | C01 | KAFKA_CLEAR_TOPIC_ON_START        = true
+2026-05-16 17:21:21 | DEBUG | C01 | PRODUCER_MESSAGE_COUNT            = 3
+2026-05-16 17:21:21 | DEBUG | C01 | PRODUCER_MESSAGE_INTERVAL_SECONDS = 2
+2026-05-16 17:21:21 | DEBUG | C01 | PRODUCER_MAX_MESSAGES             = 50
+2026-05-16 17:21:21 | DEBUG | C01 | PRODUCER_POLL_INTERVAL_SECONDS    = 15
+2026-05-16 17:21:21 | DEBUG | C01 | KAFKA_GROUP_ID                    = streaming-consumer-group-A
+2026-05-16 17:21:21 | DEBUG | C01 | KAFKA_AUTO_OFFSET_RESET           = earliest
+2026-05-16 17:21:21 | DEBUG | C01 | CONSUMER_TIMEOUT_SECONDS          = 10
+2026-05-16 17:21:21 | DEBUG | C01 | CONSUMER_MAX_MESSAGES             = 1000
+2026-05-16 17:21:21 | INFO | C01 | === RUN START ===
+2026-05-16 17:21:21 | INFO | C01 | project=C01
+2026-05-16 17:21:21 | INFO | C01 | repo_dir=streaming-01-foundations
+2026-05-16 17:21:21 | INFO | C01 | python=3.14.2
+2026-05-16 17:21:21 | INFO | C01 | os=Windows 11
+2026-05-16 17:21:21 | INFO | C01 | shell=powershell
+2026-05-16 17:21:21 | INFO | C01 | cwd=.
+2026-05-16 17:21:21 | INFO | C01 | github_actions=False
+2026-05-16 17:21:21 | INFO | C01 | ========================
+2026-05-16 17:21:21 | INFO | C01 | START consumer main()
+2026-05-16 17:21:21 | INFO | C01 | ========================
+2026-05-16 17:21:21 | INFO | C01 | ROOT_DIR = .
+2026-05-16 17:21:21 | INFO | C01 | DATA_DIR = data
+2026-05-16 17:21:21 | INFO | C01 | TOPIC_CSV = data\output\streaming-01-foundations-femi.csv
+2026-05-16 17:21:21 | INFO | C01 | OUTPUT_CSV = data\output\consumed_sales_femi.csv
+2026-05-16 17:21:21 | INFO | C01 | ========================
+2026-05-16 17:21:21 | INFO | C01 | SECTION A. Acquire
+2026-05-16 17:21:21 | INFO | C01 | ========================
+2026-05-16 17:21:21 | INFO | C01 | Loading settings from .env...
+2026-05-16 17:21:21 | INFO | C01 | KAFKA_TOPIC                    = streaming-01-foundations-case
+2026-05-16 17:21:21 | INFO | C01 | CONSUMER_MAX_MESSAGES          = 1000
+2026-05-16 17:21:21 | INFO | C01 | CONSUMER_POLL_INTERVAL_SECONDS = 0.5
+2026-05-16 17:21:21 | INFO | C01 | CONSUMER_TIMEOUT_SECONDS       = 10.0
+2026-05-16 17:21:21 | INFO | C01 | Verifying local simulated topic file...
+2026-05-16 17:21:21 | INFO | C01 | Topic file found: streaming-01-foundations-femi.csv
+2026-05-16 17:21:21 | INFO | C01 | ========================
+2026-05-16 17:21:21 | INFO | C01 | SECTION C. Consume and Process Messages
+2026-05-16 17:21:21 | INFO | C01 | ========================
+2026-05-16 17:21:21 | INFO | C01 | Initializing output...
+2026-05-16 17:21:21 | INFO | C01 | Output CSV cleared: consumed_sales_femi.csv
+2026-05-16 17:21:21 | INFO | C01 | Consuming local messages...
+2026-05-16 17:21:21 | INFO | C01 | Waiting for up to 1000 message(s).
+2026-05-16 17:21:21 | INFO | C01 | Stopping after 10.0s with no new message.
+
+2026-05-16 17:21:21 | INFO | C01 | {'order_id': 'e7324981-a9f0-419f-b708-d0a333451fff', 'datetime': '2026-05-04T08:11:00Z', 'region_id': 'US-TX', 'currency_code': 'USD', 'product_id': 'PY-STREAM-005', 'unit_price': '59.99', 'quantity': '3', 'is_online': 'true', 'customer_id': 'CUST-4150', 'is_new_customer': 'false', 'device_type': 'tablet', 'payment_method': 'paypal', 'referral_source': 'paid_search', 'discount_code': '', 'customer_note': 'Gift for my team', 'message_id': 'sale-1', 'produced_at_utc': '2026-05-16T22:20:56.772979+00:00'}
+2026-05-16 17:21:21 | INFO | C01 | Processing raw local message.
+2026-05-16 17:21:21 | INFO | C01 | MESSAGE CONSUMED
+2026-05-16 17:21:21 | INFO | C01 | consumed=1
+2026-05-16 17:21:21 | INFO | C01 | {'order_id': 'd61943e0-f543-4b5f-9c9a-18605ea4cfe5', 'datetime': '2026-05-04T08:23:00Z', 'region_id': 'US-TX', 'currency_code': 'USD', 'product_id': 'PY-DATA-002', 'unit_price': '49.99', 'quantity': '1', 'is_online': 'true', 'customer_id': 'CUST-1106', 'is_new_customer': 'false', 'device_type': 'mobile', 'payment_method': 'paypal', 'referral_source': 'paid_search', 'discount_code': '', 'customer_note': 'Gift for my team', 'message_id': 'sale-2', 'produced_at_utc': '2026-05-16T22:20:58.775067+00:00'}
+2026-05-16 17:21:21 | INFO | C01 | Processing raw local message.
+2026-05-16 17:21:21 | INFO | C01 | MESSAGE CONSUMED
+2026-05-16 17:21:21 | INFO | C01 | consumed=2
+2026-05-16 17:21:21 | INFO | C01 | {'order_id': '14da1915-8e74-47be-9e10-f7275d31af46', 'datetime': '2026-05-04T08:28:00Z', 'region_id': 'CA-QC', 'currency_code': 'CAD', 'product_id': 'PY-NLP-006', 'unit_price': '54.99', 'quantity': '1', 'is_online': 'true', 'customer_id': 'CUST-2133', 'is_new_customer': 'false', 'device_type': 'desktop', 'payment_method': 'paypal', 'referral_source': 'organic', 'discount_code': '', 'customer_note': 'Learning at my own pace', 'message_id': 'sale-3', 'produced_at_utc': '2026-05-16T22:21:00.777150+00:00'}
+2026-05-16 17:21:21 | INFO | C01 | Processing raw local message.
+2026-05-16 17:21:21 | INFO | C01 | MESSAGE CONSUMED
+2026-05-16 17:21:21 | INFO | C01 | consumed=3
+2026-05-16 17:21:31 | INFO | C01 | No new message received within 10.0s timeout.
+2026-05-16 17:21:31 | INFO | C01 | Producer finished or paused. Stopping consumer.
+2026-05-16 17:21:31 | INFO | C01 | Saving artifacts...
+2026-05-16 17:21:31 | INFO | C01 | WROTE OUTPUT_CSV = data\output\consumed_sales_femi.csv
+2026-05-16 17:21:31 | INFO | C01 | ========================
+2026-05-16 17:21:31 | INFO | C01 | SECTION E. Exit
+2026-05-16 17:21:31 | INFO | C01 | ========================
+2026-05-16 17:21:31 | INFO | C01 | Summary:
+2026-05-16 17:21:31 | INFO | C01 | Consumed 3 message(s).
+2026-05-16 17:21:31 | INFO | C01 | OUTPUT_CSV = data\output\consumed_sales_femi.csv
+2026-05-16 17:21:31 | INFO | C01 | ========================
+2026-05-16 17:21:31 | INFO | C01 | Consumer executed successfully!
+2026-05-16 17:21:31 | INFO | C01 | ========================
+
+
+
+
+
+
 
 [![Workflow Guide](https://img.shields.io/badge/Pro--Guide-pro--analytics--02-green)](https://denisecase.github.io/pro-analytics-02/workflow-b-apply-example-project/)
 [![Python 3.14](https://img.shields.io/badge/python-3.14%2B-blue?logo=python)](./pyproject.toml)
